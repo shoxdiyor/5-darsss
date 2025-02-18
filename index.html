@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Character Counter</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">
+          <div class="logo-icon"></div>
+          <h1>Character Counter</h1>
+        </div>
+        <button id="darkModeToggle" class="theme-toggle">
+          <span class="toggle-icon">🌙</span>
+        </button>
+      </header>
+
+      <main>
+        <h2 class="title">Analyze your text<br />in real-time.</h2>
+
+        <div class="text-input-container">
+          <textarea
+            id="textInput"
+            placeholder="Start typing here... (or paste your text)"
+          ></textarea>
+        </div>
+
+        <div class="controls">
+          <div class="left-controls">
+            <label class="control-item">
+              <input type="checkbox" id="excludeSpaces" />
+              Exclude Spaces
+            </label>
+            <div class="control-item limit-control">
+              <span>Set Character Limit</span>
+              <input type="number" id="charLimit" value="300" />
+            </div>
+          </div>
+          <div class="reading-time">
+            Approx. reading time: <span id="readingTime">0</span> minute
+          </div>
+        </div>
+
+        <div class="stats-container">
+          <div class="stat-card purple">
+            <div class="stat-number" id="charCount">00</div>
+            <div class="stat-label">Total Characters</div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-number" id="wordCount">00</div>
+            <div class="stat-label">Word Count</div>
+          </div>
+          <div class="stat-card coral">
+            <div class="stat-number" id="sentenceCount">00</div>
+            <div class="stat-label">Sentence Count</div>
+          </div>
+        </div>
+
+        <div class="letter-density">
+          <h3>Letter Density</h3>
+          <p id="densityMessage">
+            No characters found. Start typing to see letter density.
+          </p>
+          <div id="densityChart"></div>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
