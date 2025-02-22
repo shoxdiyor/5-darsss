@@ -1,67 +1,67 @@
-const darkModeToggle = document.getElementById("darkModeToggle");
-const htmlElement = document.documentElement;
+let btn = document.getElementById("darkModeToggle");
 
-const savedTheme = localStorage.getItem("theme");
-if (savedTheme) {
-  htmlElement.setAttribute("data-theme", savedTheme);
-  updateThemeIcon(savedTheme === "dark");
+function switchTheme() {
+  let dark = document.documentElement.getAttribute("data-theme") === "dark";
+  document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+  btn.innerHTML = dark ? "🌙" : "☀️";
 }
 
-function updateThemeIcon(isDark) {
-  darkModeToggle.querySelector(".toggle-icon").textContent = isDark
-    ? "☀️"
-    : "🌙";
-}
+btn.onclick = switchTheme;
+btn.innerHTML = "🌙";
 
-darkModeToggle.addEventListener("click", () => {
-  const isDark = htmlElement.getAttribute("data-theme") === "dark";
-  const newTheme = isDark ? "light" : "dark";
+let text = document.getElementById("textInput");
+let charDisplay = document.getElementById("charCount");
+let wordDisplay = document.getElementById("wordCount");
+let sentDisplay = document.getElementById("sentenceCount");
+let skipSpaces = document.getElementById("excludeSpaces");
+let timeDisplay = document.getElementById("readingTime");
+let letterDisplay = document.getElementById("letterDensityContainer");
 
-  htmlElement.setAttribute("data-theme", newTheme);
-  localStorage.setItem("theme", newTheme);
-  updateThemeIcon(!isDark);
-});
+function countText() {
+  let content = text.value;
 
-const textInput = document.getElementById("textInput");
-const charCount = document.getElementById("charCount");
-const wordCount = document.getElementById("wordCount");
-const sentenceCount = document.getElementById("sentenceCount");
-const excludeSpaces = document.getElementById("excludeSpaces");
-const charLimit = document.getElementById("charLimit");
-const readingTime = document.getElementById("readingTime");
-const densityMessage = document.getElementById("densityMessage");
+  charDisplay.textContent = skipSpaces.checked
+    ? content.replace(/\s/g, "").length
+    : content.length;
 
-function updateCounts() {
-  const text = textInput.value;
+  let words = content
+    .trim()
+    .split(" ")
+    .filter((w) => w.length > 0);
+  wordDisplay.textContent = words.length;
 
-  const chars = excludeSpaces.checked
-    ? text.replace(/\s/g, "").length
-    : text.length;
-  charCount.textContent = chars.toString().padStart(2, "0");
+  let sentences = content.split(/[.!?]/).filter((s) => s.trim().length > 0);
+  sentDisplay.textContent = sentences.length;
 
-  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-  wordCount.textContent = words.toString().padStart(2, "0");
+  let time = Math.max(1, Math.ceil(words.length / 200));
+  timeDisplay.textContent =
+    "Approx. reading time: " + time + (time === 1 ? " minute" : " minutes");
 
-  const sentences = text.trim()
-    ? text.split(/[.!?]+/).filter(Boolean).length
-    : 0;
-  sentenceCount.textContent = sentences.toString().padStart(2, "0");
+  let letters = {};
+  let clean = content.toLowerCase().replace(/[^a-z]/g, "");
 
-  const minutes = Math.ceil(words / 200);
-  readingTime.textContent = minutes;
-
-  if (text.trim()) {
-    densityMessage.style.display = "none";
-  } else {
-    densityMessage.style.display = "block";
+  for (let letter of clean) {
+    letters[letter] = (letters[letter] || 0) + 1;
   }
+
+  let top5 = Object.entries(letters)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  let html = "";
+  for (let [letter, count] of top5) {
+    let percent = ((count / clean.length) * 100).toFixed(1);
+    html += `
+            <div class="density-bar">
+                <span>${letter.toUpperCase()}</span>
+                <div class="bar" style="width: ${percent}%"></div>
+                <span>${count} (${percent}%)</span>
+            </div>
+        `;
+  }
+  letterDisplay.innerHTML = html;
 }
 
-textInput.addEventListener("input", updateCounts);
-excludeSpaces.addEventListener("change", updateCounts);
-charLimit.addEventListener("input", () => {
-  const limit = parseInt(charLimit.value) || 300;
-  textInput.maxLength = limit;
-});
-
-updateCounts();
+text.oninput = countText;
+skipSpaces.onchange = countText;
+countText();
